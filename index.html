@@ -22,10 +22,11 @@
 
           MDX Course Work
         </span>
-        <div v-on:click="navigate" class="border-2 text-sm p-2 font-extralight hover:bg-black cursor-pointer">
+        <Button v-on:click="navigate" v-bind:disabled="cartItemCount == 0"
+          class="border-2 text-sm p-2 font-extralight hover:bg-black cursor-pointer">
           View {{pageInverse}} ({{cartItemCount}})
-        </div>
       </div>
+      </Button>
     </header>
     <section v-if="currentPage === 'home'">
       <main class="max-w-screen-xl py-20 text-gray-100 m-auto">
@@ -94,10 +95,11 @@
           form below
         </p>
 
-        <button v-on:click="()=> navigate('checkout')"
-          class=" border-2 text-sm p-2 font-extralight mt-5 w-full text-center hover:bg-black cursor-pointer">
+        <button v-bind:disabled="!isCartEnabled" v-on:click="()=> navigate('checkout')"
+          class=" border-2 text-sm p-2 font-extralight mt-5 w-full text-center hover:bg-black hover:text-white cursor-pointer bg-white text-black">
           Proceed with Checkout
         </button>
+
 
         <div class="grid grid-cols-3 gap-4 mt-20">
           <div class="mx-10 border-2 border-gray-700 p-5 bg-gray-900" v-for="subject in getCartProducts()">
@@ -148,8 +150,12 @@
             </h1>
             <input v-model="form.name" type="text" class="bg-black w-80 p-2 border-2 mt-2 font-thin"
               placeholder="Name" />
+            <p class="text-pink-700">
+              {{form.nameError}}
+            </p>
             <input v-model="form.phone" type="number" class="bg-black w-80 p-2 border-2 mt-2 font-thin"
               placeholder="Phone" />
+            {{form.phoneError}}
             <button v-bind:disabled="!isFormButtonValid" v-on:click="navigate('success')"
               class="border-2 bg-white text-black text-sm p-2 font-extralight mt-5 w-80 text-center hover:bg-black hover:text-white cursor-pointer">
               Complete
@@ -185,15 +191,19 @@
 
       </main>
     </section>
-    <section v-if="currentPage === 'checkout'">
+    <section v-if="currentPage === 'success'">
       <main class="max-w-screen-xl py-20 text-gray-100 m-auto">
         <h1 class="text-xl ">
-          Success
+          Success 🎉
         </h1>
         <p class="font-thin">
           Your order has been made successfully, Thank you for time.
         </p>
 
+        <button v-on:click="navigate('home')"
+          class="border-2 bg-white text-black text-sm p-2 font-extralight mt-5 w-80 text-center hover:bg-black hover:text-white cursor-pointer">
+          Go Back to Home
+        </button>
 
 
       </main>

@@ -4,13 +4,16 @@ app = new Vue({
   data: {
     form: {
       name: "",
+      nameError: "",
       phone: "",
+      phoneError: "",
     },
     cartItems: [],
-    orderBy: "Ascending",
-    sortBy: "Title",
+    orderBy: "",
+    sortBy: "",
+
     search: "",
-    currentPage: "checkout",
+    currentPage: "home",
     sortByPlaceHolder: ["location", "price", "spaces", "rating", "title"],
     orderByPlaceholder: ["ascending", "descending"],
     subjects: data,
@@ -109,12 +112,20 @@ app = new Vue({
   computed: {
     isFormButtonValid() {
       // validate phone
-      if (!this.form.name || !this.form.phone) return false;
+      if (!this.form.name || !this.form.phone) {
+        return false;
+      }
       const reg = new RegExp("^[0-9]*$", "g");
       const reg1 = new RegExp("^[a-zA-Z_ ]*$", "g");
       const a = this.form.phone.match(reg);
       const b = this.form.name.match(reg1);
-      if (!a || !b) return false;
+      if (!a || !b) {
+        !b && (this.form.nameError = "Kindly make sure to only input string");
+        !a && (this.form.phoneError = "Kindly make sure to only input Number");
+        return false;
+      }
+      this.form.nameError = "";
+      this.form.phoneError = "";
       return true;
     },
     pageInverse() {
@@ -129,6 +140,9 @@ app = new Vue({
     },
     cartItemCount() {
       return this.cartItems.length;
+    },
+    isCartEnabled() {
+      return this.cartItemCount.length > 0;
     },
   },
 });
