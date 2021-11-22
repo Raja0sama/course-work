@@ -84,7 +84,120 @@
         </div>
       </main>
     </section>
+    <section v-if="currentPage === 'cart'">
+      <main class="max-w-screen-xl py-20 text-gray-100 m-auto">
+        <h1 class="text-xl ">
+          Cart📕
+        </h1>
+        <p class="font-thin">
+          Below are the products that you have added in the cart, you can remove them if you want or checkout from the
+          form below
+        </p>
 
+        <button v-on:click="()=> navigate('checkout')"
+          class=" border-2 text-sm p-2 font-extralight mt-5 w-full text-center hover:bg-black cursor-pointer">
+          Proceed with Checkout
+        </button>
+
+        <div class="grid grid-cols-3 gap-4 mt-20">
+          <div class="mx-10 border-2 border-gray-700 p-5 bg-gray-900" v-for="subject in getCartProducts()">
+            <img v-bind:src="subject.image" class="w-full h-80	" style="object-fit:cover" />
+            <div class="flex justify-between pt-2">
+              <div>
+                <h1 class="text-xl">
+                  {{subject.title}}
+                </h1>
+                <p class="font-thin">
+                  Class Location : {{subject.location}} <br />
+                  Spaces Available : {{subject.spaces - itemsInCart(subject.id)}}<br />
+                  <span v-for="i in 5">
+                    {{i <= subject.rating ? "★" : "☆" }} </span>
+                </p>
+              </div>
+              <span>
+                {{subject.price}}$
+              </span>
+            </div>
+
+            <button v-on:click='()=> addToCart(subject.id)' v-bind:disabled="!isEnabled(subject.id)"
+              class="border-2 text-sm p-2 font-extralight mt-5 w-full text-center hover:bg-black cursor-pointer">
+              Add to Cart
+            </button>
+            <button v-on:click='()=> removeFromCart(subject.id)'
+              class="border-2 text-sm p-2 font-extralight mt-5 w-full text-center hover:bg-black cursor-pointer">
+              Remove from Cart ({{subject.inCart}})
+            </button>
+          </div>
+        </div>
+      </main>
+
+    </section>
+    <section v-if="currentPage === 'checkout'">
+      <main class="max-w-screen-xl py-20 text-gray-100 m-auto">
+        <h1 class="text-xl ">
+          Checkout 💰
+        </h1>
+        <p class="font-thin">
+          Complete the checkout by filling the form below, and then click on complete checkout.
+        </p>
+
+        <div class="grid grid-cols-2 gap-4 pt-20">
+          <div>
+            <h1 class="text-xl ">
+              Complete the form to checkout.
+            </h1>
+            <input v-model="form.name" type="text" class="bg-black w-80 p-2 border-2 mt-2 font-thin"
+              placeholder="Name" />
+            <input v-model="form.phone" type="number" class="bg-black w-80 p-2 border-2 mt-2 font-thin"
+              placeholder="Phone" />
+            <button v-bind:disabled="!isFormButtonValid" v-on:click="navigate('success')"
+              class="border-2 bg-white text-black text-sm p-2 font-extralight mt-5 w-80 text-center hover:bg-black hover:text-white cursor-pointer">
+              Complete
+            </button>
+
+          </div>
+          <!-- ... -->
+          <div class="border-2 p-2">
+            <h1 class="text-lg font-thin ">
+              Summary
+            </h1>
+            <hr />
+            <div v-for="subject in getCartProducts()" class="flex justify-between font-thin">
+              <span>
+                {{subject.title }}
+              </span>
+              <span>
+                {{subject.inCart}} x {{subject.price}} = {{subject.inCart * subject.price}}
+              </span>
+            </div>
+            <hr />
+            <div class="flex justify-between">
+              <span>
+                Total
+              </span>
+              <span>
+                {{totalCartSum}}
+              </span>
+            </div>
+          </div>
+        </div>
+
+
+      </main>
+    </section>
+    <section v-if="currentPage === 'checkout'">
+      <main class="max-w-screen-xl py-20 text-gray-100 m-auto">
+        <h1 class="text-xl ">
+          Success
+        </h1>
+        <p class="font-thin">
+          Your order has been made successfully, Thank you for time.
+        </p>
+
+
+
+      </main>
+    </section>
 
 
   </div>

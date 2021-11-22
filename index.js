@@ -107,6 +107,16 @@ app = new Vue({
     },
   },
   computed: {
+    isFormButtonValid() {
+      // validate phone
+      if (!this.form.name || !this.form.phone) return false;
+      const reg = new RegExp("^[0-9]*$", "g");
+      const reg1 = new RegExp("^[a-zA-Z_ ]*$", "g");
+      const a = this.form.phone.match(reg);
+      const b = this.form.name.match(reg1);
+      if (!a || !b) return false;
+      return true;
+    },
     pageInverse() {
       const page = this.currentPage === "home" ? "cart" : "home";
       return page;
