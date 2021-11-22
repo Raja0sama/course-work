@@ -63,47 +63,20 @@ app = new Vue({
       return subject.spaces > getItemsInCart;
     },
   },
-  watch: {
-    search(val) {
-      if (val === "") return (this.subjects = data);
-      this.subjects = this.subjects.filter((e) =>
-        e.title.toLowerCase().includes(val.toLowerCase())
-      );
+
+  computed: {
+    pageInverse() {
+      const page = this.currentPage === "home" ? "cart" : "home";
+      return page;
     },
-    orderBy(val) {
-      const { subjects, sortBy } = this;
-      const n = val === "ascending" ? -1 : 1;
-      const p = val === "ascending" ? 1 : -1;
-      const sub = subjects.sort(function (a, b) {
-        if (a[sortBy] < b[sortBy]) {
-          return n;
-        }
-        if (a[sortBy] > b[sortBy]) {
-          return p;
-        }
-        return 0;
-      });
-      console.log({ subjects });
-
-      this.subjects = sub;
+    totalCartSum() {
+      return this.getCartProducts().reduce((acc, curr) => {
+        acc += curr.price * curr.inCart;
+        return acc;
+      }, 0);
     },
-
-    sortBy(sortBy) {
-      const { subjects, orderBy } = this;
-      const n = orderBy === "ascending" ? -1 : 1;
-      const p = orderBy === "ascending" ? 1 : -1;
-      const sub = subjects.sort(function (a, b) {
-        if (a[sortBy] < b[sortBy]) {
-          return n;
-        }
-        if (a[sortBy] > b[sortBy]) {
-          return p;
-        }
-        return 0;
-      });
-      console.log({ subjects });
-
-      this.subjects = sub;
+    cartItemCount() {
+      return this.cartItems.length;
     },
   },
 });
