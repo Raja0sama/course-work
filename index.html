@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width">
+  <title>Vue ToDo List</title>
+  <link href="main-styles.css" rel="stylesheet" type="text/css" />
+  <link href="tailwind.css" rel="stylesheet" type="text/css" />
+  <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+  <script src="product.js"></script>
+
+  <link href="https://fonts.googleapis.com/css?family=IBM+Plex+Sans|Lato" rel="stylesheet">
+</head>
+
+<body>
+  <div id="app" class="bg-black w-screen min-h-screen ">
+    <header class="bg-gray-900 h-24 flex items-center  text-2xl">
+      <div class="w-screen max-w-screen-xl m-auto text-white flex justify-between">
+        <span>
+
+          MDX Course Work
+        </span>
+        <div v-on:click="navigate" class="border-2 text-sm p-2 font-extralight hover:bg-black cursor-pointer">
+          View {{pageInverse}} ({{cartItemCount}})
+        </div>
+      </div>
+    </header>
+    <section v-if="currentPage === 'home'">
+      <main class="max-w-screen-xl py-20 text-gray-100 m-auto">
+        <h1 class="text-xl ">
+          Subjects 📕
+        </h1>
+        <p class="font-thin">
+          Below are the subjects Available for extra classes, you can book a session by on:clicking on the link below
+        </p>
+        <div class="flex justify-between">
+          <div class="">
+
+            <select v-model="sortBy" class="bg-black w-40 p-2 border-2 mt-2 font-thin">
+              <option value="" disabled selected>Sort By</option>
+
+              <option v-for="item in sortByPlaceHolder" v-bind:value="item"> {{item}}</option>
+
+            </select>
+            <select v-model="orderBy" class="bg-black w-40 p-2 border-2 mt-2 font-thin">
+              <option value="" disabled selected>Order By</option>
+              <option v-for="item in orderByPlaceholder" v-bind:value="item">{{item}}</option>
+            </select>
+
+          </div>
+          <div>
+            <input type="text" v-model="search" class="bg-black w-60 p-2 border-2 mt-2 font-thin"
+              placeholder="Search Now" />
+          </div>
+
+        </div>
+        <div class="grid grid-cols-3 gap-4 mt-20">
+          <div class="mx-10 border-2 border-gray-700 p-5 bg-gray-900" v-for="subject in subjects">
+            <img v-bind:src="subject.image" class="w-full h-80	" style="object-fit:cover" />
+            <div class="flex justify-between pt-2">
+              <div>
+                <h1 class="text-xl">
+                  {{subject.title}}
+                </h1>
+                <p class="font-thin">
+                  Class Location : {{subject.location}} <br />
+                  Spaces Available : {{subject.spaces - itemsInCart(subject.id)}}<br />
+                  <span v-for="i in 5">
+                    {{i <= subject.rating ? "★" : "☆" }} </span>
+                </p>
+              </div>
+              <span>
+                {{subject.price}}$
+              </span>
+            </div>
+
+            <button v-on:click='()=> addToCart(subject.id)' v-bind:disabled="!isEnabled(subject.id)"
+              class="border-2 text-sm p-2 font-extralight mt-5 w-full text-center hover:bg-black cursor-pointer">
+              Add to Cart
+            </button>
+          </div>
+        </div>
+      </main>
+    </section>
+    <section v-if="currentPage === 'cart'">
+      <main class="max-w-screen-xl py-20 text-gray-100 m-auto">
+        <h1 class="text-xl ">
+          Cart📕
+        </h1>
+        <p class="font-thin">
+          Below are the products that you have added in the cart, you can remove them if you want or checkout from the
+          form below
+        </p>
+
+        <button v-on:click="()=> navigate('checkout')"
+          class=" border-2 text-sm p-2 font-extralight mt-5 w-full text-center hover:bg-black cursor-pointer">
+          Proceed with Checkout
+        </button>
+
+        <div class="grid grid-cols-3 gap-4 mt-20">
+          <div class="mx-10 border-2 border-gray-700 p-5 bg-gray-900" v-for="subject in getCartProducts()">
+            <img v-bind:src="subject.image" class="w-full h-80	" style="object-fit:cover" />
+            <div class="flex justify-between pt-2">
+              <div>
+                <h1 class="text-xl">
+                  {{subject.title}}
+                </h1>
+                <p class="font-thin">
+                  Class Location : {{subject.location}} <br />
+                  Spaces Available : {{subject.spaces - itemsInCart(subject.id)}}<br />
+                  <span v-for="i in 5">
+                    {{i <= subject.rating ? "★" : "☆" }} </span>
+                </p>
+              </div>
+              <span>
+                {{subject.price}}$
+              </span>
+            </div>
+
+            <button v-on:click='()=> addToCart(subject.id)' v-bind:disabled="!isEnabled(subject.id)"
+              class="border-2 text-sm p-2 font-extralight mt-5 w-full text-center hover:bg-black cursor-pointer">
+              Add to Cart
+            </button>
+            <button v-on:click='()=> removeFromCart(subject.id)'
+              class="border-2 text-sm p-2 font-extralight mt-5 w-full text-center hover:bg-black cursor-pointer">
+              Remove from Cart ({{subject.inCart}})
+            </button>
+          </div>
+        </div>
+      </main>
+
+    </section>
+    <section v-if="currentPage === 'checkout'">
+      <main class="max-w-screen-xl py-20 text-gray-100 m-auto">
+        <h1 class="text-xl ">
+          Checkout 💰
+        </h1>
+        <p class="font-thin">
+          Complete the checkout by filling the form below, and then click on complete checkout.
+        </p>
+
+        <div class="grid grid-cols-2 gap-4 pt-20">
+          <div>
+            <h1 class="text-xl ">
+              Complete the form to checkout.
+            </h1>
+            <input type="text" class="bg-black w-80 p-2 border-2 mt-2 font-thin" placeholder="Name" />
+            <input type="text" class="bg-black w-80 p-2 border-2 mt-2 font-thin" placeholder="Phone" />
+          </div>
+          <!-- ... -->
+          <div class="border-2 p-2">
+            <h1 class="text-lg font-thin ">
+              Summary
+            </h1>
+            <hr />
+            <div v-for="subject in getCartProducts()" class="flex justify-between font-thin">
+              <span>
+                {{subject.title }}
+              </span>
+              <span>
+                {{subject.inCart}} x {{subject.price}} = {{subject.inCart * subject.price}}
+              </span>
+            </div>
+            <hr />
+            <div class="flex justify-between">
+              <span>
+                Total
+              </span>
+              <span>
+                {{totalCartSum}}
+              </span>
+            </div>
+          </div>
+        </div>
+
+
+      </main>
+    </section>
+
+
+  </div>
+  <script src="index.js"></script>
+</body>
+
+</html>
