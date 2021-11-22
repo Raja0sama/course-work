@@ -21,7 +21,9 @@ app = new Vue({
   methods: {
     navigate(id) {
       if (id && typeof id === "string") return (this.currentPage = id);
+
       const page = this.currentPage === "home" ? "cart" : "home";
+      console.log({ page });
       this.currentPage = page;
     },
     removeFromCart(id) {
