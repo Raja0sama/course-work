@@ -106,19 +106,4 @@ app = new Vue({
       this.subjects = sub;
     },
   },
-  computed: {
-    pageInverse() {
-      const page = this.currentPage === "home" ? "cart" : "home";
-      return page;
-    },
-    totalCartSum() {
-      return this.getCartProducts().reduce((acc, curr) => {
-        acc += curr.price * curr.inCart;
-        return acc;
-      }, 0);
-    },
-    cartItemCount() {
-      return this.cartItems.length;
-    },
-  },
 });
