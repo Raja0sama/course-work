@@ -5,7 +5,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width">
   <title>MDX Course work</title>
-  <link href="main-styles.css" rel="stylesheet" type="text/css" />
+  <!-- <link href="main-styles.css" rel="stylesheet" type="text/css" /> -->
   <link href="tailwind.css" rel="stylesheet" type="text/css" />
   <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
   <script src="product.js"></script>
@@ -156,7 +156,7 @@
             <input v-model="form.phone" type="number" class="bg-black w-80 p-2 border-2 mt-2 font-thin"
               placeholder="Phone" />
             {{form.phoneError}}
-            <button v-bind:disabled="!isFormButtonValid" v-on:click="navigate('success')"
+            <button v-bind:disabled="!isFormButtonValid" v-on:click="createAnOrder('success')"
               class="border-2 bg-white text-black text-sm p-2 font-extralight mt-5 w-80 text-center hover:bg-black hover:text-white cursor-pointer">
               Complete {{!isFormButtonValid ? "(disabled)" : ""}}
             </button>

@@ -16,14 +16,71 @@ app = new Vue({
     currentPage: "home",
     sortByPlaceHolder: ["location", "price", "spaces", "rating", "title"],
     orderByPlaceholder: ["ascending", "descending"],
-    subjects: data,
+    subjects: [],
+    originalData: [],
+  },
+  created: function () {
+    fetch(
+      "https://express-vue-app-raja.herokuapp.com/collection/webstore"
+    ).then(function (response) {
+      response.json().then(function (json) {
+        const d = json.map((e) => ({ ...e, id: e._id }));
+        app.originalData = d;
+        app.subjects = d;
+      });
+    });
   },
   methods: {
+    createAnOrder(pageToNavigate) {
+      const a = this.cartItems.reduce((acc, curr) => {
+        acc[curr] = acc[curr] ? acc[curr] + 1 : 1;
+        return acc;
+      }, {});
+      const order = {
+        name: this.form.name,
+        phone: this.form.phone,
+        lessons: Object.entries(a).map(([k, v]) => ({
+          lessonId: k,
+          spaces: v,
+        })),
+      };
+      var myHeaders = new Headers();
+      myHeaders.append("Content-Type", "application/json");
+
+      fetch("https://express-vue-app-raja.herokuapp.com/collection/order", {
+        method: "POST",
+        headers: myHeaders,
+        body: JSON.stringify({
+          ...order,
+        }),
+      })
+        .then((response) => response.text())
+        .then((result) => console.log(result))
+        .catch((error) => console.log("error", error));
+
+      Object.entries(a).forEach(([k, v]) => {
+        const { spaces } = app.subjects.find((e) => e._id === k);
+        console.log({ spaces });
+        fetch(
+          `https://express-vue-app-raja.herokuapp.com/collection/webstore/${k}`,
+          {
+            method: "PUT",
+            headers: myHeaders,
+            body: JSON.stringify({
+              spaces: spaces - v,
+            }),
+          }
+        )
+          .then((response) => response.text())
+          .then((result) => console.log(result))
+          .catch((error) => console.log("error", error));
+      });
+      this.navigate(pageToNavigate);
+    },
     navigate(id) {
       if (id && typeof id === "string") return (this.currentPage = id);
 
       const page = this.currentPage === "home" ? "cart" : "home";
-      console.log({ page });
       this.currentPage = page;
     },
     removeFromCart(id) {
@@ -70,10 +127,18 @@ app = new Vue({
   },
   watch: {
     search(val) {
-      if (val === "") return (this.subjects = data);
-      this.subjects = this.subjects.filter((e) =>
-        e.title.toLowerCase().includes(val.toLowerCase())
-      );
+      if (val === "") return (this.subjects = app.originalData);
+      fetch(
+        `https://express-vue-app-raja.herokuapp.com/collection/webstore?search=title:${val}`
+      ).then(function (response) {
+        response.json().then(function (json) {
+          app.subjects = json.map((e) => ({ ...e, id: e._id }));
+        });
+      });
+
+      // this.subjects = this.subjects.filter((e) =>
+      //   e.title.toLowerCase().includes(val.toLowerCase())
+      // );
     },
     orderBy(val) {
       const { subjects, sortBy } = this;
@@ -128,6 +193,7 @@ app = new Vue({
       }
       this.form.nameError = "";
       this.form.phoneError = "";
+
       return true;
     },
     pageInverse() {
