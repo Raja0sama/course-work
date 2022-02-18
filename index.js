@@ -31,6 +31,7 @@ app = new Vue({
     });
   },
   methods: {
+    // Create Order and Navigate to Success Page Page
     createAnOrder(pageToNavigate) {
       const a = this.cartItems.reduce((acc, curr) => {
         acc[curr] = acc[curr] ? acc[curr] + 1 : 1;
@@ -46,7 +47,6 @@ app = new Vue({
       };
       var myHeaders = new Headers();
       myHeaders.append("Content-Type", "application/json");
-
       fetch("https://express-vue-app-raja.herokuapp.com/collection/order", {
         method: "POST",
         headers: myHeaders,
@@ -77,12 +77,14 @@ app = new Vue({
       });
       this.navigate(pageToNavigate);
     },
+    // Page Navigation Function
     navigate(id) {
       if (id && typeof id === "string") return (this.currentPage = id);
 
       const page = this.currentPage === "home" ? "cart" : "home";
       this.currentPage = page;
     },
+    // Remove From Cart
     removeFromCart(id) {
       console.log({ id });
       const arr = this.cartItems;
@@ -92,6 +94,7 @@ app = new Vue({
       }
       this.cartItems = arr;
     },
+
     getCartProducts() {
       const sub = this.subjects;
       const products = this.cartItems.reduce((acc, curr) => {
@@ -127,7 +130,7 @@ app = new Vue({
   },
   watch: {
     search(val) {
-      if (val === "") return (this.subjects = app.originalData);
+      // if (val === "") return (this.subjects = app.originalData);
       fetch(
         `https://express-vue-app-raja.herokuapp.com/collection/webstore?search=title:${val}`
       ).then(function (response) {
