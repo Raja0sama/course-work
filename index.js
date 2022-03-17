@@ -1,6 +1,20 @@
+import Cart from "./cart.js";
+import Checkout from "./checkout.js";
+import Lessons from "./lesson.js";
 let app;
 app = new Vue({
   el: "#app",
+  components: {
+    lessons: {
+      ...Lessons,
+      created() {
+        console.log({ s: this.$props });
+      },
+    },
+    checkout: Checkout,
+    cart: Cart,
+  },
+
   data: {
     form: {
       name: "",
@@ -24,6 +38,7 @@ app = new Vue({
       "https://express-vue-app-raja.herokuapp.com/collection/webstore"
     ).then(function (response) {
       response.json().then(function (json) {
+        console.log({ json });
         const d = json.map((e) => ({ ...e, id: e._id }));
         app.originalData = d;
         app.subjects = d;
